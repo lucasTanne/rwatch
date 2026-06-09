@@ -4,10 +4,11 @@
 
 ### Features
 
-- [ ] File path identification
-- [ ] Use inotify wrapper from crates.io to watch a file a retrieve events
-- [ ] Store events in a in-memory list
+- [x] File path identification
+- [x] Use inotify wrapper from crates.io to watch a file and retrieve events
+- [x] Store events in a in-memory list
 - [ ] Write an HTTP API to list events and watch context
+- [ ] Implement unit tests
 
 ## Release 0.2.0
 

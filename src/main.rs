@@ -1,7 +1,11 @@
 use std::env;
 use std::path::Path;
 
-use inotify::{EventMask, Inotify, WatchMask};
+use inotify::{Inotify, WatchMask};
+
+mod event_record;
+mod event_record_list;
+mod utils;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -22,25 +26,23 @@ fn main() {
 
     println!("start watching file...");
 
+    let mut record_list = event_record_list::new();
+
     let mut buff = [0u8; 4096];
     loop {
         println!("Waiting for event...");
 
         let events = inotify.read_events_blocking(&mut buff).expect("unable to read events");
-
         for event in events {
-            match event.mask {
-                EventMask::MODIFY => {
-                    println!("file modified")
+            
+            let event_record = match event_record::new(file_path.display().to_string(), event.mask) {
+                Ok(e) => e,
+                Err(_) => {
+                    println!("Unable to handle event mask: {:?}", event.mask);
+                    continue;
                 }
-                EventMask::OPEN => {
-                    println!("file opened")
-                }
-                EventMask::CLOSE_WRITE => {
-                    println!("file closed after written")
-                }
-                _ => panic!("mask {:?} unsupported yet", event.mask)
-            }
+            };
+            record_list.push(event_record);
         }
     }
 }

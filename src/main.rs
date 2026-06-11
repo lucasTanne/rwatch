@@ -1,13 +1,19 @@
-use std::env;
+use std::{env, sync::Arc};
 use std::path::Path;
 
+use axum::extract::State;
 use inotify::{Inotify, WatchMask};
 
 use axum::{Router, routing::get};
+use tokio::sync::Mutex;
 
 mod event_record;
 mod event_record_list;
 mod utils;
+
+struct AppState {
+    event_record_list: Mutex<event_record_list::EventRecordList>
+}
 
 #[tokio::main]
 async fn main() {
@@ -19,6 +25,12 @@ async fn main() {
 
     let arg_file = args[1].clone();
 
+    let shared_state = Arc::new(AppState{
+        event_record_list: Mutex::new(event_record_list::new())
+    });
+
+
+    let task_state = shared_state.clone();
     tokio::spawn(async move {
         println!("start watching {}", arg_file);
 
@@ -27,7 +39,7 @@ async fn main() {
             panic!("Error: {} no such file or directory", file_path.display());
         }
 
-        let mut inotify = Inotify::init().expect("could not initialize inotify");
+        let mut inotify = Inotify::init().expect("unable to initialize inotify");
         let _watch_descriptor = inotify
             .watches()
             .add(file_path, WatchMask::ALL_EVENTS)
@@ -35,7 +47,6 @@ async fn main() {
 
         println!("start watching file...");
 
-        let mut record_list = event_record_list::new();
         let mut buff = [0u8; 4096];
 
         loop {
@@ -49,21 +60,24 @@ async fn main() {
                 let event_record = match event_record::new(file_path.display().to_string(), event.mask) {
                     Ok(e) => e,
                     Err(_) => {
-                        println!("Unable to handle event mask: {:?}", event.mask);
+                        println!("unable to handle event mask: {:?}", event.mask);
                         continue;
                     }
                 };
 
-                record_list.push(event_record);
+                task_state.event_record_list.lock().await.push(event_record);
             }
         }
     });
 
-    let app = Router::new().route("/", get(list_events));
+    let app = Router::new().route("/", get(list_events_handler)).with_state(shared_state.clone());
     let listener = tokio::net::TcpListener::bind("0000:3000").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
 
-async fn list_events() -> String {
-    String::from("List events")
+async fn list_events_handler(State(state): State<Arc<AppState>>) -> String {
+    match state.event_record_list.lock().await.get_last_event() {
+        Some(e) => e.to_string(),
+        None => String::from("nothing")
+    }
 }

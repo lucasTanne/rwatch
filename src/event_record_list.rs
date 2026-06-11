@@ -10,7 +10,10 @@ pub fn new() -> EventRecordList {
 
 impl EventRecordList {
     pub fn push(&mut self, e: event_record::EventRecord) {
-        println!("PUSH");
         self.records.push(e);
+    }
+
+    pub fn get_last_event(&self) -> Option<&event_record::EventRecord> {
+        self.records.last()
     }
 }

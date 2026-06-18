@@ -5,7 +5,7 @@ use axum::Json;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use inotify::{Inotify, WatchMask};
+use inotify::{EventMask, Inotify, WatchMask};
 
 use axum::{Router, routing::get};
 use tokio::sync::Mutex;
@@ -52,7 +52,7 @@ async fn main() {
 
         let mut buff = [0u8; 4096];
 
-        loop {
+        'outer: loop {
             println!("Waiting for event...");
 
             let events = inotify
@@ -60,8 +60,16 @@ async fn main() {
                 .expect("unable to read events");
 
             for event in events {
+                if event.mask == EventMask::IGNORED {
+                    println!("Watch descriptor close, stopping...");
+                    break 'outer;
+                }
+
                 let event_record = match event_record::new(file_path.display().to_string(), event.mask) {
-                    Ok(e) => e,
+                    Ok(e) => {
+                        println!("{:?}", event.mask);
+                        e
+                    },
                     Err(_) => {
                         println!("unable to handle event mask: {:?}", event.mask);
                         continue;

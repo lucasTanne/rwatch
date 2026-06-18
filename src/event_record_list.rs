@@ -13,6 +13,10 @@ impl EventRecordList {
         self.records.push(e);
     }
 
+    pub fn list_events(&self) -> &[event_record::EventRecord] {
+        &self.records
+    }
+
     pub fn get_last_event(&self) -> Option<&event_record::EventRecord> {
         self.records.last()
     }

@@ -1,7 +1,9 @@
 use inotify::EventMask;
 
 use crate::utils;
+use serde::Serialize;
 
+#[derive(Clone, Serialize)]
 pub struct EventRecord {
     name: String,
     subject: String,

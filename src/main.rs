@@ -12,7 +12,6 @@ mod state;
 #[tokio::main]
 async fn main() {
     let args: Vec<String> = env::args().collect();
-    println!("Args: {:?}", args);
     if args.len() == 1 || args.len() > 2 {
         panic!("Error: file path required");
     }
@@ -41,8 +40,6 @@ async fn main() {
         let mut buff = [0u8; 4096];
 
         'outer: loop {
-            println!("Waiting for event...");
-
             let events = inotify
                 .read_events_blocking(&mut buff)
                 .expect("unable to read events");
@@ -55,7 +52,7 @@ async fn main() {
 
                 let event_record = match event_record::new(file_path.display().to_string(), event.mask) {
                     Ok(e) => {
-                        println!("{:?}", event.mask);
+                        println!("{:?}", e.to_string());
                         e
                     },
                     Err(_) => {

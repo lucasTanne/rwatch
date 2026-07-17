@@ -6,7 +6,7 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 
-use crate::{event_record, state};
+use crate::{event_record, state, utils};
 
 pub async fn start(state: Arc<state::AppState>) {
     let app = Router::new()
@@ -14,6 +14,7 @@ pub async fn start(state: Arc<state::AppState>) {
         .route("/events/last", get(get_last_event_handler))
         .with_state(state.clone());
     let listener = tokio::net::TcpListener::bind("0000:3000").await.unwrap();
+    utils::logs::log_with_time(String::from("API starts listening on http://0.0.0.0:3000"));
     axum::serve(listener, app).await.unwrap();
 }
 

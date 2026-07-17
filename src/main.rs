@@ -22,7 +22,7 @@ async fn main() {
 
     let task_state = shared_state.clone();
     tokio::spawn(async move {
-        println!("start watching {}", arg_file);
+        utils::logs::log_with_time(format!("start watching {}", arg_file));
 
         let file_path = Path::new(&arg_file);
         if !file_path.exists() {
@@ -35,7 +35,7 @@ async fn main() {
             .add(file_path, WatchMask::ALL_EVENTS)
             .expect("failed to watch file");
 
-        println!("start watching file...");
+        utils::logs::log_with_time(String::from("start watching file..."));
 
         let mut buff = [0u8; 4096];
 
@@ -46,17 +46,17 @@ async fn main() {
 
             for event in events {
                 if event.mask == EventMask::IGNORED {
-                    println!("Watch descriptor close, stopping...");
+                    utils::logs::log_with_time(String::from("Watch descriptor close, stopping..."));
                     break 'outer;
                 }
 
                 let event_record = match event_record::new(file_path.display().to_string(), event.mask) {
                     Ok(e) => {
-                        println!("{:?}", e.to_string());
+                        utils::logs::log(e.to_string());
                         e
                     },
                     Err(_) => {
-                        println!("unable to handle event mask: {:?}", event.mask);
+                        utils::logs::log_with_time(format!("unable to handle event mask: {:?}", event.mask));
                         continue;
                     }
                 };

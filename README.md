@@ -47,12 +47,12 @@ echo "This is a test" > /tmp/a
 You will receive that output:
 
 ```text
-start watching /tmp/a
-start watching file...
-"2026-07-17T19:24:56.452130624+02:00 /tmp/a OPEN"
-"2026-07-17T19:24:56.452237169+02:00 /tmp/a MODIFY"
-"2026-07-17T19:24:56.452258783+02:00 /tmp/a MODIFY"
-"2026-07-17T19:24:56.452269701+02:00 /tmp/a CLOSE_WRITE"
+2026-07-17T20:01:48.477023579+02:00 start watching /tmp/a
+2026-07-17T20:01:48.477195925+02:00 start watching file...
+2026-07-17T20:01:48.477233179+02:00 API starts listening on http://0.0.0.0:3000
+2026-07-17T20:03:24.845420854+02:00 /tmp/a OPEN
+2026-07-17T20:03:24.845480045+02:00 /tmp/a MODIFY
+2026-07-17T20:03:24.845486714+02:00 /tmp/a CLOSE_WRITE
 ```
 
 From this output, you can see that the file:

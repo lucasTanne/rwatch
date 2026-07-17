@@ -8,6 +8,8 @@ Events are saved `in-memory only` and are showed in `stdout` and by its `REST AP
 
 Rwatch use `inotify` to watch the targeted file and receive events.
 
+I use `chrono` to have the timestamp of the event in `RFC3339`.
+
 ## How to build
 
 Clone it into your machine
@@ -45,16 +47,12 @@ echo "This is a test" > /tmp/a
 You will receive that output:
 
 ```text
-Args: ["target/release/rwatch", "/tmp/a"]
 start watching /tmp/a
 start watching file...
-Waiting for event...
-EventMask(OPEN)
-EventMask(MODIFY)
-Waiting for event...
-EventMask(MODIFY)
-EventMask(CLOSE_WRITE)
-Waiting for event...
+"2026-07-17T19:24:56.452130624+02:00 /tmp/a OPEN"
+"2026-07-17T19:24:56.452237169+02:00 /tmp/a MODIFY"
+"2026-07-17T19:24:56.452258783+02:00 /tmp/a MODIFY"
+"2026-07-17T19:24:56.452269701+02:00 /tmp/a CLOSE_WRITE"
 ```
 
 From this output, you can see that the file:
@@ -79,7 +77,28 @@ curl http://127.0.0.1:3000/events
 Here is the result in `JSON`:
 
 ```text
-[{"name":"OPEN","subject":"/tmp/a"},{"name":"MODIFY","subject":"/tmp/a"},{"name":"MODIFY","subject":"/tmp/a"},{"name":"CLOSE_WRITE","subject":"/tmp/a"}]
+[
+    {
+        "name": "OPEN",
+        "subject": "/tmp/a",
+        "created_at": "2026-07-17T19:24:56.452130624+02:00"
+    },
+    {
+        "name": "MODIFY",
+        "subject": "/tmp/a",
+        "created_at": "2026-07-17T19:24:56.452237169+02:00"
+    },
+    {
+        "name": "MODIFY",
+        "subject": "/tmp/a",
+        "created_at": "2026-07-17T19:24:56.452258783+02:00"
+    },
+    {
+        "name": "CLOSE_WRITE",
+        "subject": "/tmp/a",
+        "created_at": "2026-07-17T19:24:56.452269701+02:00"
+    }
+]
 ```
 ## ROADMAP
 

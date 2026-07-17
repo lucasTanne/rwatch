@@ -11,13 +11,13 @@
 ## Release 0.2.0
 
 - [x] Replace println!() by a logging system as well as for events
-- [ ] Directory monitoring
-- [ ] Stop API when exiting watch loop
+- [x] Directory monitoring
+- [ ] ~~Stop API when exiting watch loop~~
 
 ## Release 0.3.0
 
 - [ ] CLI context (--enable-api)
-- [ ] Add README.md
+- [x] Add README.md
 
 ## Release 0.4.0
 

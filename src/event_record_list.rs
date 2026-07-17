@@ -39,7 +39,7 @@ impl EventRecordList {
 #[test]
 fn test_push() {
     let mut list = new();
-    let event_record = event_record::new(String::from("test"), EventMask::ACCESS)
+    let event_record = event_record::new(String::from("/tmp/test"), None, EventMask::ACCESS)
         .expect("expected new event record");
     
     let expected = vec![event_record.clone()];
@@ -51,7 +51,7 @@ fn test_push() {
 #[test]
 fn test_list_events() {
     let mut list = new();
-    let event_record = event_record::new(String::from("test"), EventMask::ACCESS)
+    let event_record = event_record::new(String::from("/tmp/test"), None, EventMask::ACCESS)
         .expect("expected new event record");
     
     let expected = &[event_record.clone()];
@@ -65,14 +65,14 @@ fn test_list_events() {
 #[test]
 fn test_get_last_event() {
     let mut list = new();
-    let event_record1 = event_record::new(String::from("access"), EventMask::ACCESS)
+    let event_record1 = event_record::new(String::from("/tmp/test"), None,EventMask::ACCESS)
         .expect("expected new event record access");
     list.push(event_record1.clone());
 
     let mut res = list.get_last_event().expect("expected access event");
     assert_eq!(&event_record1, res);
 
-    let event_record2 = event_record::new(String::from("modify"), EventMask::MODIFY)
+    let event_record2 = event_record::new(String::from("/tmp/test"), None, EventMask::MODIFY)
         .expect("expected new event record modify");
     list.push(event_record2.clone());
 

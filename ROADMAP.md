@@ -10,7 +10,7 @@
 
 ## Release 0.2.0
 
-- [ ] Replace println!() by a logging system as well as for events
+- [x] Replace println!() by a logging system as well as for events
 - [ ] Directory monitoring
 - [ ] Stop API when exiting watch loop
 

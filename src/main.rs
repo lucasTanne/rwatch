@@ -22,8 +22,6 @@ async fn main() {
 
     let task_state = shared_state.clone();
     tokio::spawn(async move {
-        utils::logs::log_with_time(format!("start watching {}", arg_file));
-
         let file_path = Path::new(&arg_file);
         if !file_path.exists() {
             panic!("Error: {} no such file or directory", file_path.display());
@@ -35,7 +33,7 @@ async fn main() {
             .add(file_path, WatchMask::ALL_EVENTS)
             .expect("failed to watch file");
 
-        utils::logs::log_with_time(String::from("start watching file..."));
+        utils::logs::log_with_time(format!("start watching {}", arg_file));
 
         let mut buff = [0u8; 4096];
 
@@ -50,7 +48,7 @@ async fn main() {
                     break 'outer;
                 }
 
-                let event_record = match event_record::new(file_path.display().to_string(), event.mask) {
+                let event_record = match event_record::new(file_path.display().to_string(), event.name, event.mask) {
                     Ok(e) => {
                         utils::logs::log(e.to_string());
                         e

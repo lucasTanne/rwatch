@@ -61,6 +61,8 @@ impl EventRecord {
 mod tests {
     use super::*;
     use regex::Regex;
+    
+    const RFC3339_REG: &str = r"^((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$";
 
     #[test]
     fn test_new_correct_event_on_file() {
@@ -78,9 +80,7 @@ mod tests {
         assert_eq!(expected.subject, res.subject);
 
         // Test created_at using RFC3339 regex
-        let rfc3339_regex = Regex::new(
-            r"^((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$",
-        )
+        let rfc3339_regex = Regex::new(RFC3339_REG)
         .unwrap();
         assert!(rfc3339_regex.is_match(&expected.created_at) == true);
     }
@@ -102,9 +102,7 @@ mod tests {
         assert_eq!(expected.subject, res.subject);
 
         // Test created_at using RFC3339 regex
-        let rfc3339_regex = Regex::new(
-            r"^((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$",
-        )
+        let rfc3339_regex = Regex::new(RFC3339_REG)
         .unwrap();
         assert!(rfc3339_regex.is_match(&expected.created_at) == true);
     }
@@ -126,9 +124,7 @@ mod tests {
         assert_eq!(expected.subject, res.subject);
 
         // Test created_at using RFC3339 regex
-        let rfc3339_regex = Regex::new(
-            r"^((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$",
-        )
+        let rfc3339_regex = Regex::new(RFC3339_REG)
         .unwrap();
         assert!(rfc3339_regex.is_match(&expected.created_at) == true);
     }
@@ -154,9 +150,7 @@ mod tests {
         assert_eq!(expected.subject, res.subject);
 
         // Test created_at using RFC3339 regex
-        let rfc3339_regex = Regex::new(
-            r"^((?:(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}(?:\.\d+)?))(Z|[\+-]\d{2}:\d{2})?)$",
-        )
+        let rfc3339_regex = Regex::new(RFC3339_REG)
         .unwrap();
         assert!(rfc3339_regex.is_match(&expected.created_at) == true);
     }

@@ -1,14 +1,12 @@
 # Rwatch
 
-Rwatch is a `userland` software which monitor events on an existing file in a Linux operating system.
+Rwatch is a `userland` CLI used to monitor events on an existing file/directory in a Linux operating system.
 
 Events are saved `in-memory only` and are showed in `stdout` and by its `REST API`.
 
 ## How it works
 
 Rwatch use `inotify` to watch the targeted file and receive events.
-
-I use `chrono` to have the timestamp of the event in `RFC3339`.
 
 ## How to build
 
@@ -24,7 +22,7 @@ cargo build --release
 ### How to run
 
 ```bash
-target/release/rwatch {filepath}
+target/release/rwatch --watch {filepath}
 ```
 
 ## How to use
@@ -34,7 +32,7 @@ target/release/rwatch {filepath}
 touch /tmp/a
 
 # From the project
-target/release/rwatch /tmp/a
+target/release/rwatch --watch /tmp/a
 ```
 
 Rwatch starts and wait for events.
@@ -48,8 +46,6 @@ You will receive that output:
 
 ```text
 2026-07-17T20:01:48.477023579+02:00 start watching /tmp/a
-2026-07-17T20:01:48.477195925+02:00 start watching file...
-2026-07-17T20:01:48.477233179+02:00 API starts listening on http://0.0.0.0:3000
 2026-07-17T20:03:24.845420854+02:00 /tmp/a OPEN
 2026-07-17T20:03:24.845480045+02:00 /tmp/a MODIFY
 2026-07-17T20:03:24.845486714+02:00 /tmp/a CLOSE_WRITE
@@ -60,9 +56,11 @@ From this output, you can see that the file:
 - Were modified
 - And closed after being updated
 
+Use the helper flag `-h | --help` to show the helper.
+
 ## REST API
 
-The REST API is hard configured to be use from `http://0.0.0.0:3000`.
+The REST API is hard configured to be use from `http://0.0.0.0:3000` and is enabled using the flag `--enable-api`.
 
 There are few routes you can use to retrieve event logs:
 - `/events` => to list events
@@ -71,6 +69,7 @@ There are few routes you can use to retrieve event logs:
 Here is a example of the `List handler`:
 
 ```bash
+target/release/rwatch --watch /tmp/a --enable-api
 curl http://127.0.0.1:3000/events
 ```
 

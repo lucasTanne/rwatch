@@ -16,7 +16,7 @@
 
 ## Release 0.3.0
 
-- [ ] CLI context (--enable-api)
+- [x] CLI context (--enable-api)
 - [x] Add README.md
 
 ## Release 0.4.0

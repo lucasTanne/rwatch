@@ -1,5 +1,4 @@
-use std::env;
-use std::path::Path;
+use std::path::{Path};
 
 use inotify::{EventMask, Inotify, WatchMask};
 
@@ -8,32 +7,32 @@ mod event_record_list;
 mod utils;
 mod api;
 mod state;
+mod cli;
 
 #[tokio::main]
 async fn main() {
-    let args: Vec<String> = env::args().collect();
-    if args.len() == 1 || args.len() > 2 {
-        panic!("Error: file path required");
-    }
+    let m = cli::create_cli().get_matches();
+    let file_path = m.get_one::<String>("watch").map(|f| {
+        let fp = Path::new(f);
+        if !fp.exists() {
+            panic!("Error: {} no such file or directory", fp.display());
+        }
+        fp.to_path_buf()
+    }).unwrap();
 
-    let arg_file = args[1].clone();
+    let enable_api = m.get_one::<bool>("enable-api").unwrap();
 
     let shared_state = state::new();
 
     let task_state = shared_state.clone();
     tokio::spawn(async move {
-        let file_path = Path::new(&arg_file);
-        if !file_path.exists() {
-            panic!("Error: {} no such file or directory", file_path.display());
-        }
-
         let mut inotify = Inotify::init().expect("unable to initialize inotify");
         let _watch_descriptor = inotify
             .watches()
-            .add(file_path, WatchMask::ALL_EVENTS)
+            .add(file_path.clone(), WatchMask::ALL_EVENTS)
             .expect("failed to watch file");
 
-        utils::logs::log_with_time(format!("start watching {}", arg_file));
+        utils::logs::log_with_time(format!("start watching {}", file_path.display()));
 
         let mut buff = [0u8; 4096];
 
@@ -64,5 +63,7 @@ async fn main() {
         }
     });
 
-    api::start(shared_state).await;
+    if *enable_api {
+        api::start(shared_state).await;
+    }
 }
